@@ -1,0 +1,961 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>TESTE DE ARQUÉTIPOS</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Inter:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+
+  <style>
+    :root{
+      /* Fundo externo + janela */
+      --outer1:#052e1a;
+      --outer2:#064e2a;
+      --window1:#eaf7ef;
+      --window2:#f4fbf7;
+
+      --text:#0b1f14;
+      --muted:#355b48;
+      --line: rgba(11, 31, 20, .14);
+
+      --accent:#1d8a57;
+
+      --gold1:#f6d365;
+      --gold2:#d4af37;
+      --gold3:#b8860b;
+
+      --ok:#16a34a;
+      --shadow: 0 22px 70px rgba(0,0,0,.25);
+      --radius: 22px;
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding: 26px 14px;
+      color: var(--text);
+      background:
+        radial-gradient(900px 520px at 15% -10%, rgba(246,211,101,.12), transparent 60%),
+        radial-gradient(900px 520px at 90% 0%, rgba(29,138,87,.22), transparent 55%),
+        linear-gradient(180deg, var(--outer1), var(--outer2));
+    }
+
+    .wrap{
+      width:min(980px, 100%);
+      display:grid;
+      gap:14px;
+    }
+
+    header{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding: 0 6px;
+      text-align:center;
+    }
+    .brand{
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:10px;
+    }
+    .brand h1{
+      margin:0;
+      font-family: "Playfair Display", serif;
+      font-size: clamp(34px, 4.2vw, 54px);
+      font-weight: 800;
+      letter-spacing:.6px;
+      line-height: 1.05;
+      background: linear-gradient(180deg, var(--gold1), var(--gold2), var(--gold3));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      text-shadow: 0 10px 30px rgba(0,0,0,.18);
+    }
+    .brand .sub{
+      color: rgba(234,247,239,.88);
+      font-size: 14px;
+      line-height: 1.45;
+      max-width: 72ch;
+    }
+
+    .card{
+      background: linear-gradient(180deg, rgba(234,247,239,.92), rgba(244,251,247,.90));
+      border: 1px solid rgba(234,247,239,.20);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .card-inner{ padding: 18px 18px 16px; }
+
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom: 14px;
+    }
+
+    .progress{
+      width:100%;
+      height: 12px;
+      background: rgba(11,31,20,.08);
+      border: 1px solid rgba(11,31,20,.12);
+      border-radius: 999px;
+      overflow:hidden;
+    }
+    .progress > span{
+      display:block;
+      height:100%;
+      width:0%;
+      background: linear-gradient(90deg, var(--accent), rgba(29,138,87,.35));
+      border-radius: 999px;
+      transition: width .25s ease;
+    }
+    .qmeta{
+      white-space:nowrap;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    .question-box{
+      display:grid;
+      gap: 14px;
+      padding: 18px;
+      border-radius: 18px;
+      background: rgba(255,255,255,.55);
+      border: 1px solid rgba(11,31,20,.12);
+      text-align:center;
+    }
+
+    .qtitle{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      font-size: 14px;
+      color: var(--muted);
+      font-weight: 900;
+    }
+
+    .qtext{
+      font-size: 24px;
+      line-height: 1.25;
+      font-weight: 950;
+      margin: 0 auto;
+      max-width: 40ch;
+    }
+
+    .options{
+      display:grid;
+      grid-template-columns: repeat(5, minmax(0,1fr));
+      gap: 10px;
+      margin-top: 6px;
+    }
+    .opt{
+      border-radius: 14px;
+      border: 1px solid rgba(11,31,20,.14);
+      background: rgba(255,255,255,.72);
+      padding: 10px 10px;
+      cursor:pointer;
+      transition: transform .08s ease, border-color .2s ease, box-shadow .2s ease, background .2s ease;
+      min-height: 56px;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      gap: 8px;
+      box-shadow: 0 10px 16px rgba(0,0,0,.08);
+      text-align:center;
+    }
+    .opt:hover{ transform: translateY(-1px); border-color: rgba(29,138,87,.45); }
+
+    .opt .n{
+      font-weight: 950;
+      font-size: 16px;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      justify-content:center;
+    }
+    .opt .chip{
+      font-size: 12px;
+      color: var(--muted);
+      border: 1px solid rgba(11,31,20,.14);
+      border-radius: 999px;
+      padding: 4px 10px;
+      background: rgba(11,31,20,.04);
+      font-weight: 900;
+      line-height: 1;
+    }
+    .opt.selected{
+      border-color: rgba(29,138,87,.55);
+      background: linear-gradient(180deg, rgba(29,138,87,.14), rgba(255,255,255,.78));
+      box-shadow: 0 14px 24px rgba(29,138,87,.14);
+    }
+
+    .actions{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      justify-content:space-between;
+      margin-top: 14px;
+      flex-wrap:wrap;
+    }
+
+    button{
+      border: 1px solid rgba(11,31,20,.16);
+      background: rgba(255,255,255,.72);
+      color: var(--text);
+      padding: 11px 15px;
+      border-radius: 14px;
+      cursor:pointer;
+      font-weight: 950;
+      letter-spacing:.2px;
+      transition: transform .08s ease, border-color .2s ease, opacity .2s ease;
+      box-shadow: 0 10px 16px rgba(0,0,0,.08);
+    }
+    button:hover{ transform: translateY(-1px); border-color: rgba(29,138,87,.45); }
+    button.primary{
+      border-color: rgba(29,138,87,.55);
+      background: linear-gradient(180deg, rgba(29,138,87,.14), rgba(255,255,255,.80));
+    }
+    button.warn{
+      border-color: rgba(225,29,72,.30);
+      background: linear-gradient(180deg, rgba(225,29,72,.08), rgba(255,255,255,.80));
+    }
+    button.ok{
+      border-color: rgba(22,163,74,.35);
+      background: linear-gradient(180deg, rgba(22,163,74,.10), rgba(255,255,255,.80));
+    }
+    button:disabled{ opacity:.45; cursor:not-allowed; transform:none !important; }
+
+    /* RESULTADOS */
+    .results{ display:none; gap: 12px; }
+    .results.show{ display:grid; }
+
+    .panel{
+      padding: 16px;
+      border-radius: 18px;
+      background: rgba(255,255,255,.55);
+      border: 1px solid rgba(11,31,20,.12);
+      display:grid;
+      gap: 12px;
+      text-align:left;
+    }
+    .big{
+      font-size: 20px;
+      font-weight: 950;
+      letter-spacing:.2px;
+    }
+    .muted{ color: var(--muted); }
+
+    .blocks{ display:grid; gap: 12px; }
+    .block{
+      border: 1px solid rgba(11,31,20,.14);
+      background: rgba(255,255,255,.72);
+      border-radius: 18px;
+      padding: 16px;
+      display:grid;
+      gap: 14px;
+      box-shadow: 0 10px 16px rgba(0,0,0,.06);
+    }
+
+    /* ✅ Nome do arquétipo CENTRAL, fonte diferente, tom do verde do fundo */
+    .arch-title{
+      margin: 2px 0 0;
+      text-align:center;
+      font-family: "Playfair Display", serif;    /* fonte diferente */
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: .4px;
+      color: var(--outer2);                      /* mesmo tom do verde do fundo */
+    }
+
+    .block-head{
+      display:grid;
+      gap:10px;
+    }
+
+    .tagrow{
+      display:flex;
+      justify-content:center;
+    }
+    .tag{
+      font-size: 12px;
+      color: var(--muted);
+      border: 1px solid rgba(11,31,20,.16);
+      background: rgba(11,31,20,.03);
+      border-radius: 10px;
+      padding: 8px 12px;
+      font-weight: 950;
+      white-space:nowrap;
+    }
+
+    /* ✅ Seções: sem pílula. Só o nome, alinhado à esquerda, maior que o texto (mas sem exagero). */
+    .section{
+      display:grid;
+      gap: 6px;
+      text-align:left;
+      margin-top: 2px;
+    }
+    .section-title{
+      font-size: 15.5px;       /* maior que o texto, porém discreto */
+      font-weight: 950;
+      color: var(--outer2);
+      letter-spacing:.15px;
+      margin: 0;
+    }
+    .section-text{
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.65;
+      font-size: 14.5px;
+      font-weight: 650;
+    }
+
+    .toast{
+      display:none;
+      position: fixed;
+      bottom: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,.72);
+      border: 1px solid rgba(255,255,255,.18);
+      color: #fff;
+      padding: 10px 12px;
+      border-radius: 14px;
+      font-size: 13px;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 18px 60px rgba(0,0,0,.30);
+      max-width: calc(100% - 24px);
+      text-align:center;
+      z-index: 9999;
+    }
+    .toast.show{ display:block; animation: pop .2s ease; }
+    @keyframes pop{ from{ transform: translateX(-50%) translateY(6px); opacity:.2;} to{ transform: translateX(-50%) translateY(0); opacity:1; } }
+
+    @media (max-width: 900px){
+      .options{ grid-template-columns: 1fr; }
+      .qtext{ font-size: 22px; }
+      .arch-title{ font-size: 24px; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <h1>TESTE DE ARQUÉTIPOS</h1>
+        <div class="sub">
+          Responda de 1 a 5. No final, você verá apenas o arquétipo dominante e 2 secundários,
+          com leitura comportamental, identidade visual e aplicação em vendas.
+        </div>
+      </div>
+    </header>
+
+    <!-- TESTE -->
+    <section id="testCard" class="card">
+      <div class="card-inner">
+        <div class="topbar">
+          <div class="progress" aria-label="Progresso do teste">
+            <span id="progressFill"></span>
+          </div>
+          <div class="qmeta">
+            <span id="counter">1/72</span>
+          </div>
+        </div>
+
+        <div class="question-box">
+          <div class="qtitle">
+            <span>Afirmação</span>
+            <span id="savedStatus">Não respondida</span>
+          </div>
+
+          <div class="qtext" id="qText">...</div>
+
+          <div class="options" id="options"></div>
+        </div>
+
+        <div class="actions">
+          <button id="btnPrev">← Voltar</button>
+          <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end;">
+            <button id="btnRestart" class="warn">Reiniciar</button>
+            <button id="btnNext" class="primary">Próxima →</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- RESULTADOS -->
+    <section id="resultsCard" class="card results">
+      <div class="card-inner">
+        <div class="panel">
+          <div class="big">Seu resultado (Top 3)</div>
+          <div class="muted" style="font-size:14px; font-weight:650;">
+            Pontuação por arquétipo varia de <b>6 a 30</b>. Mostramos apenas o dominante e 2 secundários.
+          </div>
+
+          <div class="blocks" id="archetypeBlocks"></div>
+
+          <div class="actions" style="margin-top:4px;">
+            <button id="btnBackToTest">← Voltar ao teste</button>
+            <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end;">
+              <button id="btnDownloadPdf" class="ok">Baixar PDF</button>
+              <button id="btnRestart2" class="warn">Refazer teste</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div id="toast" class="toast"></div>
+  </div>
+
+  <script>
+    const TEST_NAME = "TESTE DE ARQUÉTIPOS";
+
+    const questions = [
+      "Eu reúno informações sem formar juízos.",
+      "Sinto-me desorientado por causa de tantas mudanças na minha vida.",
+      "O processo da minha autocura permite que eu ajude a curar os outros.",
+      "Eu humilho os outros.",
+      "Sinto-me seguro.",
+      "Deixo o medo de lado e faço o que precisa ser feito.",
+      "Ponho as necessidades dos outros na frente das minhas.",
+      "Procuro ser autêntico onde quer que eu esteja.",
+      "Quando a vida fica monótona, gosto de fazer uma mudança radical.",
+      "Tenho prazer em cuidar das outras pessoas.",
+      "Os outros me acham divertido.",
+      "Sinto-me sexy.",
+      "Acredito que as pessoas não querem realmente magoar as outras.",
+      "Quando criança, eu era ludibriado ou negligenciado.",
+      "Gosto mais de dar do que receber.",
+      "Concordo com a afirmação: “É melhor ter amado e perdido o objetivo desse amor do que nunca ter amado”.",
+      "Vivo a vida plenamente.",
+      "Mantenho um senso de perspectiva procurando ter uma visão de longo alcance.",
+      "Estou empenhado no processo de criar a minha própria vida.",
+      "Acredito que uma mesma coisa pode ser considerada a partir de diferentes ângulos.",
+      "Não sou mais a pessoa que pensava ser.",
+      "A vida é um rosário de tristezas.",
+      "A ajuda espiritual é responsável pela minha eficiência.",
+      "Acho mais fácil fazer as coisas para os outros do que para mim.",
+      "Encontro satisfação nos meus relacionamentos.",
+      "As pessoas me procuram em busca de orientação.",
+      "Tenho medo de pessoas que ocupam posições de poder.",
+      "Não levo as regras tão a sério.",
+      "Gosto de ajudar as pessoas a estabelecerem contato.",
+      "Sinto-me abandonado.",
+      "Às vezes consigo realizar coisas importantes aparentemente sem esforço.",
+      "Tenho capacidade de liderança.",
+      "Procuro sempre me aperfeiçoar.",
+      "Posso contar com outras pessoas para cuidarem de mim.",
+      "Prefiro estar no comando das situações.",
+      "Procuro descobrir a verdade que está por trás das aparências.",
+      "A modificação de meus pensamentos altera a minha vida.",
+      "Eu estimulo o desenvolvimento dos recursos, sejam humanos ou naturais.",
+      "Estou disposto a correr riscos pessoais para defender as ideias nas quais acredito.",
+      "Não consigo ficar parado e deixar que uma injustiça seja cometida sem tentar corrigi-la.",
+      "Eu me esforço para ser objetivo.",
+      "Minha presença muitas vezes atua como um catalisador para a realização de mudanças.",
+      "Gosto de fazer as pessoas rirem.",
+      "Tenho disciplina para alcançar as minhas metas.",
+      "Amo a humanidade como um todo.",
+      "Tenho a capacidade de combinar as habilidades das pessoas com as tarefas a serem realizadas.",
+      "A manutenção da minha independência é fundamental para mim.",
+      "Acredito que todas as pessoas e todas as coisas do mundo estão interligadas.",
+      "O mundo é um lugar seguro.",
+      "As pessoas em quem confiei me abandonaram.",
+      "Sinto certa inquietação.",
+      "Estou renunciando às coisas que não servem mais para mim.",
+      "Gosto de “alegrar” as pessoas que são excessivamente sérias.",
+      "Um pouco de bagunça é bom para a alma.",
+      "O fato de ter me sacrificado para ajudar os outros fez de mim uma pessoa melhor.",
+      "Sou uma pessoa calma.",
+      "Costumo enfrentar pessoas hostis.",
+      "Gosto de transformar as situações.",
+      "A chave para o sucesso, em todos os aspectos da vida, é a disciplina.",
+      "A inspiração vem facilmente para mim.",
+      "Não estou à altura das expectativas que tinha para mim.",
+      "Tenho a sensação de que um mundo melhor está à minha espera em algum lugar.",
+      "Quando conheço uma pessoa, presumo que ela é digna de confiança.",
+      "Meus sonhos estão se transformando em realidade.",
+      "Sei que minhas necessidades serão supridas.",
+      "Tenho vontade de realizar algum tipo de ruptura.",
+      "Procuro administrar as situações tendo em mente o bem geral.",
+      "Sinto dificuldade para dizer não.",
+      "Tenho mais ideias boas do que tempo para transformá-las em realidade.",
+      "Estou procurando melhorar a minha vida.",
+      "Tive decepções com pessoas que foram importantes na minha vida.",
+      "O ato de procurar alguma coisa é tão importante quanto encontrá-la."
+    ];
+
+    const likert = [
+      { value: 1, short: "Quase nunca" },
+      { value: 2, short: "Raramente" },
+      { value: 3, short: "Às vezes" },
+      { value: 4, short: "Geralmente" },
+      { value: 5, short: "Quase sempre" }
+    ];
+
+    const archetypeMap = {
+      "Inocente":     [5, 13, 34, 49, 63, 65],
+      "Cara Comum":   [14, 22, 27, 30, 50, 71],
+      "Guerreiro":    [6, 39, 40, 44, 57, 59],
+      "Cuidador":     [7, 10, 15, 24, 55, 68],
+      "Explorador":   [33, 47, 51, 62, 70, 72],
+      "Amante":       [12, 16, 17, 25, 29, 45],
+      "Fora da Lei":  [2, 4, 21, 52, 61, 66],
+      "Criador":      [8, 19, 31, 60, 64, 69],
+      "Mago":         [3, 23, 37, 42, 48, 58],
+      "Governante":   [26, 32, 35, 38, 46, 67],
+      "Sábio":        [1, 18, 20, 36, 41, 56],
+      "Bobo":         [9, 11, 28, 43, 53, 54]
+    };
+
+    const archetypeProfiles = {
+      "Inocente": {
+        essence: "Busca simplicidade, esperança e segurança. Quando bem direcionado, transmite paz e confiança.",
+        patterns: "Decide pela via mais limpa e previsível. Sob pressão, pode evitar conflito e negar sinais ruins para manter a sensação de segurança.",
+        path: "Discernimento sem cinismo: checar fatos antes de confiar, criar critérios de escolha e praticar limites gentis. Regra prática: decisões importantes exigem 2 evidências objetivas, não só sensação.",
+        visual: "Cores claras, muito espaço em branco, estética limpa e luminosa. Formas arredondadas e imagens com luz natural e calma.",
+        sales: "Promessa: alívio e simplicidade (“clareza”, “passo a passo”, “sem complicar”). Para não soar ingênuo, mostre método e critérios."
+      },
+      "Cara Comum": {
+        essence: "Pertencimento e identificação. É o arquétipo do “eu sou como você”.",
+        patterns: "Prefere soluções práticas. Sob pressão, pode se diminuir para não se destacar e evitar autoridade por medo de rejeição.",
+        path: "Posicionamento claro: definir bandeira, comunicar limites e assumir liderança sem arrogância. Disciplina: toda semana, publicar 1 opinião objetiva (sem agressão).",
+        visual: "Humano e acessível. Cotidiano, estética simples, cores neutras com 1 acento forte. Tipografia muito legível.",
+        sales: "Vende por proximidade e prova social: histórias reais, bastidores, antes/depois. Evite ficar genérico: foque em 1 dor e 1 promessa específica."
+      },
+      "Guerreiro": {
+        essence: "Vitória, coragem e superação. Energia de execução.",
+        patterns: "Decide rápido. Sob pressão, pode endurecer, ficar impaciente e tratar pessoas como obstáculos.",
+        path: "Força com inteligência: planejar antes de atacar, medir progresso e delegar. Disciplina: 1 meta por ciclo + 3 métricas, revisão semanal.",
+        visual: "Contraste, linhas firmes, dinâmica. Tipos robustos, composições com ação e postura.",
+        sales: "Promessa: resultado mensurável (“performance”, “disciplina”, “meta”). Tom firme, sem agressividade: método + métricas + respeito."
+      },
+      "Cuidador": {
+        essence: "Serviço, proteção e compaixão. Alívio da dor do outro.",
+        patterns: "Coloca pessoas acima de si. Sob pressão, pode se sacrificar demais, ficar ressentido e gerar dependência.",
+        path: "Cuidar sem se perder: limites, autocuidado obrigatório e ensinar autonomia. Regra prática: toda ajuda precisa ter tarefa do outro.",
+        visual: "Acolhedor, suave, humano. Formas arredondadas, sensação de segurança.",
+        sales: "Vende por confiança e cuidado. Evite prometer demais: escopo e limites claros."
+      },
+      "Explorador": {
+        essence: "Liberdade, descoberta e autonomia.",
+        patterns: "Busca novidade. Sob pressão, pode fugir do compromisso e trocar de rota cedo demais.",
+        path: "Liberdade com consistência: escolher 1 direção por ciclo, testar com prazos e construir repertório. Disciplina: experimento com data de término.",
+        visual: "Espaço, aventura, orgânico. Paisagens, textura natural, layout arejado.",
+        sales: "Promessa: expansão e autonomia. Evite dispersão oferecendo trilha e roteiro."
+      },
+      "Amante": {
+        essence: "Conexão, beleza e vínculo. Move-se pela experiência emocional e sensorial.",
+        patterns: "Busca significado e intimidade. Sob pressão, pode buscar validação e prender-se ao apego.",
+        path: "Desejo com maturidade: comunicar necessidades, fortalecer autoestima e escolher vínculos saudáveis. Regra: conversa honesta + 24h de pausa antes de decisões emocionais.",
+        visual: "Elegância e emoção. Textura, profundidade, estética refinada.",
+        sales: "Promessa: viver melhor, conexão, experiência. Para não soar manipulador, seja transparente e firme em valores."
+      },
+      "Fora da Lei": {
+        essence: "Ruptura e libertação de estruturas injustas. Questiona padrões.",
+        patterns: "Confronta o status quo. Sob pressão, pode provocar por identidade e gerar conflito desnecessário.",
+        path: "Rebeldia com direção: atacar o problema, não pessoas; criar regras próprias; transformar crítica em proposta prática.",
+        visual: "Ousado, contraste, atitude. Estética urbana, tipografia marcante.",
+        sales: "Promessa: verdade dura e mudança real. Evite caos: método e entrega sólida."
+      },
+      "Criador": {
+        essence: "Originalidade e expressão. Construção de algo único.",
+        patterns: "Decide por criação. Sob pressão, pode perfeccionar demais e adiar lançamento.",
+        path: "Criar e concluir: prototipar rápido, publicar antes do perfeito e iterar. Regra 70%: lança e melhora.",
+        visual: "Autoral e criativo com ordem. Layout com personalidade, mas leitura limpa.",
+        sales: "Promessa: assinatura e singularidade. Evite confundir arte com clareza: mensagem simples e CTA direto."
+      },
+      "Mago": {
+        essence: "Transformação. Enxerga padrões e acredita que mudança interna muda o externo.",
+        patterns: "Foca em virada. Sob pressão, pode prometer demais ou soar vago.",
+        path: "Transformação com prova: traduzir visão em passos e métricas. Para cada insight: 1 ação + 1 métrica.",
+        visual: "Profundidade e atmosfera. Gradientes suaves, sensação de mistério elegante.",
+        sales: "Promessa: reprogramação e virada. Evite abstrato demais: passos, exemplos e evidência."
+      },
+      "Governante": {
+        essence: "Ordem, responsabilidade e autoridade. Estrutura e previsibilidade.",
+        patterns: "Decide por estratégia. Sob pressão, pode controlar demais e perder empatia.",
+        path: "Autoridade humana: delegar, criar processos, ouvir dados e pessoas. Disciplina: 1 tarefa delegada/semana + 1 decisão orientada por métricas.",
+        visual: "Premium e organizado. Grid, alinhamento, estética sóbria e segura.",
+        sales: "Promessa: controle e previsibilidade. Evite distância: clareza + cuidado com o cliente."
+      },
+      "Sábio": {
+        essence: "Verdade e clareza. Entende antes de afirmar.",
+        patterns: "Analisa múltiplos ângulos. Sob pressão, pode ficar na análise e adiar decisão.",
+        path: "Conhecimento que vira ação: limitar pesquisa, testar e ensinar com simplicidade. Regra 80/20: mais aplicação que estudo por ciclo.",
+        visual: "Minimalista e legível. Espaço em branco, diagramas, tipografia clara.",
+        sales: "Promessa: método e prova. Evite ficar técnico demais: histórias e aplicação prática."
+      },
+      "Bobo": {
+        essence: "Leveza e alegria. Humor como ponte social.",
+        patterns: "Busca prazer e espontaneidade. Sob pressão, pode usar humor para fugir de responsabilidade ou vulnerabilidade.",
+        path: "Leveza com maturidade: humor como ponte, não fuga. Disciplina: 1 meta séria/semana + 1 ritual leve de sustentação.",
+        visual: "Cores vivas, formas arredondadas, elementos divertidos e dinâmicos.",
+        sales: "Promessa: simplicidade e energia. Evite superficialidade: por trás do humor, entregue transformação real."
+      }
+    };
+
+    const totalQ = questions.length;
+    let idx = 0;
+    const answers = new Array(totalQ).fill(null);
+
+    const progressFill = document.getElementById("progressFill");
+    const counter = document.getElementById("counter");
+    const qText = document.getElementById("qText");
+    const optionsEl = document.getElementById("options");
+    const savedStatus = document.getElementById("savedStatus");
+
+    const btnPrev = document.getElementById("btnPrev");
+    const btnNext = document.getElementById("btnNext");
+    const btnRestart = document.getElementById("btnRestart");
+
+    const testCard = document.getElementById("testCard");
+    const resultsCard = document.getElementById("resultsCard");
+    const archetypeBlocks = document.getElementById("archetypeBlocks");
+
+    const btnBackToTest = document.getElementById("btnBackToTest");
+    const btnRestart2 = document.getElementById("btnRestart2");
+    const btnDownloadPdf = document.getElementById("btnDownloadPdf");
+
+    const toast = document.getElementById("toast");
+
+    function showToast(msg){
+      toast.textContent = msg;
+      toast.classList.add("show");
+      clearTimeout(showToast._t);
+      showToast._t = setTimeout(()=> toast.classList.remove("show"), 1800);
+    }
+
+    function pctAnswered(){
+      const answeredCount = answers.filter(v => v !== null).length;
+      return Math.round((answeredCount / totalQ) * 100);
+    }
+
+    function updateProgress(){
+      progressFill.style.width = pctAnswered() + "%";
+      counter.textContent = `${idx+1}/${totalQ}`;
+    }
+
+    function renderOptions(){
+      optionsEl.innerHTML = "";
+      likert.forEach(o => {
+        const b = document.createElement("button");
+        b.type = "button";
+        b.className = "opt";
+        b.setAttribute("data-val", String(o.value));
+        b.innerHTML = `<div class="n">${o.value} <span class="chip">${o.short}</span></div>`;
+        b.addEventListener("click", () => selectValue(o.value));
+        optionsEl.appendChild(b);
+      });
+    }
+
+    function highlightSelected(){
+      const v = answers[idx];
+      [...optionsEl.querySelectorAll(".opt")].forEach(el => {
+        const val = Number(el.getAttribute("data-val"));
+        el.classList.toggle("selected", v === val);
+      });
+
+      if(v === null){
+        savedStatus.textContent = "Não respondida";
+        savedStatus.style.color = "var(--muted)";
+      }else{
+        savedStatus.textContent = `Respondida (${v})`;
+        savedStatus.style.color = "var(--ok)";
+      }
+    }
+
+    function renderQuestion(){
+      qText.textContent = questions[idx];
+      btnPrev.disabled = (idx === 0);
+      const isLast = (idx === totalQ - 1);
+      btnNext.textContent = isLast ? "Finalizar →" : "Próxima →";
+      updateProgress();
+      highlightSelected();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function selectValue(v){
+      answers[idx] = v;
+      highlightSelected();
+      updateProgress();
+      setTimeout(() => {
+        if(idx < totalQ - 1) next();
+      }, 120);
+    }
+
+    function next(){
+      if(answers[idx] === null){
+        showToast("Selecione uma opção (1–5) para continuar.");
+        return;
+      }
+      if(idx === totalQ - 1){
+        finish();
+        return;
+      }
+      idx++;
+      renderQuestion();
+    }
+
+    function prev(){
+      if(idx === 0) return;
+      idx--;
+      renderQuestion();
+    }
+
+    function restart(){
+      if(!confirm("Deseja reiniciar o teste? Todas as respostas serão apagadas.")) return;
+      for(let i=0;i<answers.length;i++) answers[i] = null;
+      idx = 0;
+      showResults(false);
+      renderQuestion();
+      showToast("Teste reiniciado.");
+    }
+
+    function showResults(show){
+      if(show){
+        testCard.style.display = "none";
+        resultsCard.classList.add("show");
+      }else{
+        testCard.style.display = "";
+        resultsCard.classList.remove("show");
+      }
+    }
+
+    function computeScores(){
+      const scores = {};
+      for(const [name, qNums] of Object.entries(archetypeMap)){
+        let s = 0;
+        for(const q of qNums){
+          const v = answers[q-1];
+          s += (v ?? 0);
+        }
+        scores[name] = s;
+      }
+      return scores;
+    }
+
+    function rankArchetypes(scores){
+      return Object.entries(scores)
+        .map(([name, score]) => ({ name, score }))
+        .sort((a,b) => b.score - a.score);
+    }
+
+    function finish(){
+      const missing = answers.findIndex(v => v === null);
+      if(missing !== -1){
+        idx = missing;
+        renderQuestion();
+        showToast("Ainda existem perguntas sem resposta.");
+        return;
+      }
+
+      const scores = computeScores();
+      const ranked = rankArchetypes(scores);
+      const top3 = ranked.slice(0,3);
+
+      renderTop3(top3);
+      showResults(true);
+      showToast("Resultado gerado.");
+    }
+
+    function renderTop3(top3){
+      archetypeBlocks.innerHTML = "";
+
+      top3.forEach((r, i) => {
+        const p = archetypeProfiles[r.name];
+
+        const label = i === 0 ? "Dominante" : `Secundário ${i}`;
+        const border = i === 0 ? "rgba(212,175,55,.85)" : "rgba(11,31,20,.18)";
+
+        const block = document.createElement("div");
+        block.className = "block";
+        block.style.borderColor = border;
+
+        block.innerHTML = `
+          <div class="block-head">
+            <div class="arch-title">${r.name}</div>
+            <div class="tagrow">
+              <span class="tag" style="border-color:${border};">${label} • ${r.score}/30</span>
+            </div>
+          </div>
+
+          <div class="section">
+            <div class="section-title">Essência</div>
+            <p class="section-text">${p.essence}</p>
+          </div>
+
+          <div class="section">
+            <div class="section-title">Padrões comportamentais</div>
+            <p class="section-text">${p.patterns}</p>
+          </div>
+
+          <div class="section">
+            <div class="section-title">Caminho comportamental</div>
+            <p class="section-text">${p.path}</p>
+          </div>
+
+          <div class="section">
+            <div class="section-title">Identidade visual</div>
+            <p class="section-text">${p.visual}</p>
+          </div>
+
+          <div class="section">
+            <div class="section-title">Como usar para vender</div>
+            <p class="section-text">${p.sales}</p>
+          </div>
+        `;
+
+        archetypeBlocks.appendChild(block);
+      });
+    }
+
+    function downloadPdf(){
+      const missing = answers.findIndex(v => v === null);
+      if(missing !== -1){
+        showToast("Finalize o teste antes de baixar o PDF.");
+        return;
+      }
+
+      const scores = computeScores();
+      const ranked = rankArchetypes(scores);
+      const top3 = ranked.slice(0,3);
+
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF({ unit: "pt", format: "a4" });
+
+      const pageW = doc.internal.pageSize.getWidth();
+      const pageH = doc.internal.pageSize.getHeight();
+      const margin = 44;
+      let y = 52;
+
+      const wrap = (text, maxW) => doc.splitTextToSize(text, maxW);
+      const ensure = (need=60) => {
+        if(y + need > pageH - margin){
+          doc.addPage();
+          y = 52;
+        }
+      };
+
+      const h1 = (t) => {
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(18);
+        doc.text(t, margin, y);
+        y += 18;
+      };
+      const h2 = (t) => {
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(13);
+        doc.text(t, margin, y);
+        y += 14;
+      };
+      const p = (t) => {
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(11);
+        const lines = wrap(t, pageW - margin*2);
+        doc.text(lines, margin, y);
+        y += lines.length * 14;
+      };
+      const hr = () => {
+        doc.setDrawColor(160);
+        doc.setLineWidth(0.6);
+        doc.line(margin, y, pageW - margin, y);
+        y += 14;
+      };
+
+      h1(TEST_NAME);
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(11);
+      doc.text("Relatório de resultado (Top 3).", margin, y);
+      y += 16;
+
+      hr();
+      ensure(80);
+
+      h2("Top 3 arquétipos");
+      top3.forEach((r, i) => {
+        ensure(18);
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(11);
+        const label = i === 0 ? "Dominante" : `Secundário ${i}`;
+        doc.text(`${label}: ${r.name} — ${r.score}/30`, margin, y);
+        y += 16;
+      });
+
+      ensure(80);
+      hr();
+      h2("Leitura estratégica");
+      top3.forEach((r, i) => {
+        ensure(220);
+        const prof = archetypeProfiles[r.name];
+        const label = i === 0 ? "Dominante" : `Secundário ${i}`;
+
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(12);
+        doc.text(`${label}: ${r.name} (${r.score}/30)`, margin, y);
+        y += 16;
+
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(11);
+
+        p(`Essência: ${prof.essence}`);
+        p(`Padrões comportamentais: ${prof.patterns}`);
+        p(`Caminho comportamental: ${prof.path}`);
+        p(`Identidade visual: ${prof.visual}`);
+        p(`Como usar para vender: ${prof.sales}`);
+
+        y += 6;
+        hr();
+      });
+
+      doc.save("teste-de-arquetipos-resultado-top3.pdf");
+      showToast("PDF gerado.");
+    }
+
+    btnPrev.addEventListener("click", prev);
+    btnNext.addEventListener("click", next);
+    btnRestart.addEventListener("click", restart);
+
+    btnBackToTest.addEventListener("click", () => showResults(false));
+    btnRestart2.addEventListener("click", restart);
+    btnDownloadPdf.addEventListener("click", downloadPdf);
+
+    window.addEventListener("keydown", (e) => {
+      const inResults = resultsCard.classList.contains("show");
+      if(inResults){
+        if(e.key === "Escape") showResults(false);
+        return;
+      }
+      if(["1","2","3","4","5"].includes(e.key)){
+        selectValue(Number(e.key));
+      }else if(e.key === "ArrowRight"){
+        next();
+      }else if(e.key === "ArrowLeft"){
+        prev();
+      }else if(e.key === "Enter"){
+        next();
+      }
+    });
+
+    renderOptions();
+    renderQuestion();
+  </script>
+</body>
+</html>
